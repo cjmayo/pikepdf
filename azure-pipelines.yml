@@ -198,5 +198,5 @@ stages:
                   displayName: "Upload to PyPI"
                   condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
                 - script: |
-                    curl -X POST -d "token=$(RTD_TOKEN)" https://readthedocs.org/api/v2/webhook/pikepdf/39557/
+                    curl -X POST -d "token=$(TOKEN_RTD)" https://readthedocs.org/api/v2/webhook/pikepdf/39557/
                   displayName: "Trigger ReadTheDocs"
