@@ -4,7 +4,7 @@ variables:
   jpeg_release: "https://www.ijg.org/files/jpegsrc.v9c.tar.gz"
   zlib_release: "https://www.zlib.net/zlib-1.2.11.tar.gz"
   cibw_skip: "cp27-* cp34-*"
-  cibw_test_command: "pytest -nauto --junitxml=test.xml {project}/tests"
+  cibw_test_command: "pytest -nauto --junitxml={project}/test.xml {project}/tests"
   cibw_test_requires: "-r requirements/test.txt"
   cibuildwheel_version: "1.0.0"
   cibw_before_build: "pip install pybind11"
@@ -42,7 +42,7 @@ stages:
             displayName: "Build sdist"
           - bash: |
               export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-              python -m pytest -nauto --junitxml=test-sdist.xml --cov=pikepdf --cov-report=xml --cov-report=html
+              python -m pytest -nauto --junitxml=test-sdist.xml --cov=pikepdf --cov-report=xml
             displayName: "Test"
           - task: PublishTestResults@2
             inputs:
@@ -65,7 +65,7 @@ stages:
             LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
             CXXFLAGS="-I/usr/local/include"
             LDFLAGS="-L/usr/local/lib"
-            CIBW_BUILD="*-manylinux_x86_64"
+          cibw_build: "*-manylinux_x86_64"
           cibw_before_build:
             >- # yaml: folded newlines to spaces, no newline at end
             [ ! -f /usr/local/lib/libz.a ] &&
@@ -108,7 +108,7 @@ stages:
             LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
             CXXFLAGS="-I/usr/local/include"
             LDFLAGS="-L/usr/local/lib"
-            CIBW_BUILD="*-manylinux_i686"
+          cibw_build: "*-manylinux_i686"
           cibw_before_build:
             >- # yaml: folded newlines to spaces, no newline at end
             [ ! -f /usr/local/lib/libz.a ] &&
@@ -160,7 +160,7 @@ stages:
         pool: { vmImage: "vs2017-win2016" }
         variables:
           qpdf_windows: ${{ format('https://github.com/qpdf/qpdf/releases/download/release-qpdf-{0}/qpdf-{0}-bin-msvc64.zip', variables.qpdf_version) }}
-          cibw_skip: "*-win_amd64"
+          cibw_build: "*-win_amd64"
           cibw_environment: >-
             INCLUDE="$INCLUDE;c:\\qpdf\\include"
             LIB="$LIB;c:\\qpdf\\lib"
@@ -177,7 +177,7 @@ stages:
         pool: { vmImage: "vs2017-win2016" }
         variables:
           qpdf_windows: ${{ format('https://github.com/qpdf/qpdf/releases/download/release-qpdf-{0}/qpdf-{0}-bin-msvc32.zip', variables.qpdf_version) }}
-          cibw_skip: "*-win32"
+          cibw_build: "*-win32"
           cibw_environment: >-
             INCLUDE="$INCLUDE;c:\\qpdf\\include"
             LIB="$LIB;c:\\qpdf\\lib"
