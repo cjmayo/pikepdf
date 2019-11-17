@@ -244,11 +244,12 @@ stages:
                 - script: |
                     python -m twine upload -r "testpypi" --config-file .pypirc dist/*
                   displayName: "Upload to TestPyPI"
-                  condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+                  condition: not(always())
                 - script: |
                     python -m twine upload --config-file .pypirc dist/*
                   displayName: "Upload to PyPI"
-                  condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+                  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
                 - script: |
                     curl -X POST -d "token=$(TOKEN_RTD)" https://readthedocs.org/api/v2/webhook/pikepdf/39557/
                   displayName: "Trigger ReadTheDocs"
+                  condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/master')))
