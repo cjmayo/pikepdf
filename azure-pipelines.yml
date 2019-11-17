@@ -100,7 +100,7 @@ stages:
               testRunTitle: "$(Agent.OS) - $(Build.DefinitionName) - Python $(python.version)"
             condition: succeededOrFailed()
           - publish: wheelhouse
-            artifact: linux
+            artifact: linux64
       - job: linux32
         pool: { vmImage: "Ubuntu-16.04" }
         variables:
@@ -143,7 +143,7 @@ stages:
               testRunTitle: "$(Agent.OS) - $(Build.DefinitionName) - Python $(python.version)"
             condition: succeededOrFailed()
           - publish: wheelhouse
-            artifact: linux
+            artifact: linux32
       - job: macos
         pool: { vmImage: "macOS-10.13" }
         variables:
@@ -207,7 +207,9 @@ stages:
                 - download: current
                   artifact: sdist
                 - download: current
-                  artifact: linux
+                  artifact: linux64
+                - download: current
+                  artifact: linux32
                 - download: current
                   artifact: macos
                 - download: current
@@ -217,7 +219,8 @@ stages:
                 - script: |
                     mkdir -p dist
                     mv $(Pipeline.Workspace)/sdist/* dist
-                    mv $(Pipeline.Workspace)/linux/* dist
+                    mv $(Pipeline.Workspace)/linux64/* dist
+                    mv $(Pipeline.Workspace)/linux32/* dist
                     mv $(Pipeline.Workspace)/macos/* dist
                     mv $(Pipeline.Workspace)/win64/* dist
                     mv $(Pipeline.Workspace)/win32/* dist
