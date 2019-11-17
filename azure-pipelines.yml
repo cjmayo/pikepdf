@@ -160,7 +160,7 @@ stages:
         pool: { vmImage: "vs2017-win2016" }
         variables:
           qpdf_windows: ${{ format('https://github.com/qpdf/qpdf/releases/download/release-qpdf-{0}/qpdf-{0}-bin-msvc64.zip', variables.qpdf_version) }}
-          cibw_skip: "cp27-* cp34-* cp35-win32* cp36-win32* cp37-win32* cp38-win32*"
+          cibw_skip: "*-win_amd64"
           cibw_environment: >-
             INCLUDE="$INCLUDE;c:\\qpdf\\include"
             LIB="$LIB;c:\\qpdf\\lib"
@@ -177,7 +177,7 @@ stages:
         pool: { vmImage: "vs2017-win2016" }
         variables:
           qpdf_windows: ${{ format('https://github.com/qpdf/qpdf/releases/download/release-qpdf-{0}/qpdf-{0}-bin-msvc32.zip', variables.qpdf_version) }}
-          cibw_skip: "cp27-* cp34-* cp35-win_amd64* cp36-win_amd64* cp37-win_amd64* cp38-win_amd64*"
+          cibw_skip: "*-win32"
           cibw_environment: >-
             INCLUDE="$INCLUDE;c:\\qpdf\\include"
             LIB="$LIB;c:\\qpdf\\lib"
