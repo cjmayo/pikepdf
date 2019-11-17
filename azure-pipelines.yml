@@ -57,12 +57,58 @@ stages:
           - publish: dist
             artifact: sdist
   - stage: "Wheels"
+    jobs:
+      - job: linux64
         pool: { vmImage: "Ubuntu-16.04" }
         variables:
           cibw_environment: >-
             LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
             CXXFLAGS="-I/usr/local/include"
             LDFLAGS="-L/usr/local/lib"
+            CIBW_BUILD="*-manylinux_x86_64"
+          cibw_before_build:
+            >- # yaml: folded newlines to spaces, no newline at end
+            [ ! -f /usr/local/lib/libz.a ] &&
+            cd zlib &&
+            ./configure &&
+            make -j install &&
+            cd .. ;
+            [ ! -f /usr/local/lib/libjpeg.a ] &&
+            cd jpeg &&
+            ./configure &&
+            make -j install &&
+            cd .. ;
+            [ ! -f /usr/local/lib/libqpdf.a ] &&
+            cd qpdf &&
+            ./autogen.sh &&
+            ./configure &&
+            make -j install &&
+            cd .. ;
+            pip install pybind11
+        steps:
+          - task: UsePythonVersion@0
+          - bash: |
+              mkdir zlib && wget -q $ZLIB_RELEASE -O - | tar xz -C zlib --strip-components=1
+              mkdir jpeg && wget -q $JPEG_RELEASE -O - | tar xz -C jpeg --strip-components=1
+              mkdir qpdf && wget -q $QPDF_RELEASE -O - | tar xz -C qpdf --strip-components=1
+            displayName: "Download QPDF and components"
+          - bash: source azure-pipelines/build.bash
+            displayName: "cibuildwheel"
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "test.xml"
+              testRunTitle: "$(Agent.OS) - $(Build.DefinitionName) - Python $(python.version)"
+            condition: succeededOrFailed()
+          - publish: wheelhouse
+            artifact: linux
+      - job: linux32
+        pool: { vmImage: "Ubuntu-16.04" }
+        variables:
+          cibw_environment: >-
+            LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+            CXXFLAGS="-I/usr/local/include"
+            LDFLAGS="-L/usr/local/lib"
+            CIBW_BUILD="*-manylinux_i686"
           cibw_before_build:
             >- # yaml: folded newlines to spaces, no newline at end
             [ ! -f /usr/local/lib/libz.a ] &&
