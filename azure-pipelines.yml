@@ -18,7 +18,7 @@ trigger:
       - "*"
 
 stages:
-  - stage: "Build_and_test"
+  - stage: "sdist"
     jobs:
       - job: linux_sdist
         pool: { vmImage: "Ubuntu-16.04" }
@@ -50,7 +50,7 @@ stages:
             condition: succeededOrFailed()
           - publish: dist
             artifact: sdist
-      - job: linux
+  - stage: "Wheels"
         pool: { vmImage: "Ubuntu-16.04" }
         variables:
           cibw_environment: >-
