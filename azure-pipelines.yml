@@ -38,16 +38,22 @@ stages:
               python -m pip install pybind11
               python -m pip install --verbose dist/*.tar.gz
               python -m pip install -r requirements/test.txt
+              python -m pip install pytest-cov
             displayName: "Build sdist"
           - bash: |
               export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-              python -m pytest -nauto --junitxml=test-sdist.xml
+              python -m pytest -nauto --junitxml=test-sdist.xml --cov=pikepdf --cov-report=xml --cov-report=html
             displayName: "Test"
           - task: PublishTestResults@2
             inputs:
               testResultsFiles: "test-sdist.xml"
               testRunTitle: "$(Agent.OS) - $(Build.DefinitionName) - Python $(python.version)"
             condition: succeededOrFailed()
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/coverage.xml"
+              reportDirectory: "$(System.DefaultWorkingDirectory)/**/htmlcov"
           - publish: dist
             artifact: sdist
   - stage: "Wheels"
